@@ -1,0 +1,39 @@
+---
+- name: Manage latency toxic for httpbin_proxy
+  hosts: all
+  vars:
+    delete: false
+  tasks:
+
+    - name: Add latency toxic to httpbin_proxy
+      when: not delete
+      ansible.builtin.uri:
+        url: http://localhost:8474/proxies/httpbin_proxy/toxics
+        method: POST
+        body: '{
+          "name": "latency_toxic",
+          "type": "latency",
+          "stream": "downstream",
+          "attributes": {"latency": 5000}
+        }'
+        body_format: json
+        headers:
+          Content-Type: "application/json"
+      register: result
+
+    - name: Print the response from the POST request
+      when: not delete
+      ansible.builtin.debug:
+        var: result.json
+
+    - name: Delete latency toxic from httpbin_proxy
+      when: delete
+      ansible.builtin.uri:
+        url: http://localhost:8474/proxies/httpbin_proxy/toxics/latency_toxic
+        method: DELETE
+      register: delete_result
+
+    - name: Print the response from the DELETE request
+      when: delete
+      ansible.builtin.debug:
+        var: delete_result.json
