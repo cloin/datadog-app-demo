@@ -31,6 +31,7 @@
       ansible.builtin.uri:
         url: http://localhost:8474/proxies/httpbin_proxy/toxics/latency_toxic
         method: DELETE
+        status_code: 204
       register: delete_result
 
     - name: Print the response from the DELETE request
